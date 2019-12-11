@@ -1,13 +1,15 @@
 #include "connexion.h"
 #include <QSqlError>
+#include <QString>
+
 Connexion::Connexion(){
                       }
 bool Connexion::ouvrirConnexion()
 {bool test=false;
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName("source_projet2A");
-    db.setUserName("akram");//inserer nom de l'utilisateur
-    db.setPassword("akram2018");//inserer mot de passe de cet utilisateur
+                           db.setDatabaseName("Source_Projet2A");
+                           db.setUserName("shayma");//inserer nom de l'utilisateur
+                           db.setPassword("1234");//inserer mot de passe de cet utilisateur
 
 if (db.open())
     test=true;
@@ -17,4 +19,3 @@ return  test;
 }
 void Connexion::fermerConnexion()
 {db.close();}
-

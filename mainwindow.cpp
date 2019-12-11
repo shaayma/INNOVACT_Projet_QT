@@ -1,17 +1,26 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "etudiant.h"
-#include "direc.h"
+#include "promotions.h"
+#include "connexion.h"
 #include <QMessageBox>
+#include <QtWidgets>
 #include <QDate>
-#include <QDateEdit>
-MainWindow::MainWindow(QWidget *parent) :
+#include <QString>
+#include <QDateTime>
+#include <QDebug>
+#include <QPixmap>
+
+
+
+MainWindow::MainWindow (QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+  ui (new Ui::MainWindow)
 {
 ui->setupUi(this);
-ui->tabetudiant->setModel(tmpetudiant.afficher());
-ui->tabdirec->setModel (tmpdirec.afficher()) ;
+
+ui->tabpromotions->setModel(tmppromotions.afficher());
+QPixmap pix("C:/Users/dell/Desktop/Mes etudes/2A/Projet C++/image");
+ui->label_pic->setPixmap(pix.scaled(1540,900,Qt::KeepAspectRatio));
 }
 
 MainWindow::~MainWindow()
@@ -19,89 +28,50 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pb_ajouter_clicked()
+
+void MainWindow::on_Ajouter_Button_clicked()
 {
-    int id = ui->lineEdit_id->text().toInt();
-    QString nom= ui->lineEdit_nom->text();
-    QString prenom= ui->lineEdit_prenom->text();
-    QDate datee = ui->dateEdit -> date();
-    QString ds=datee.toString() ;
+    int ref = ui->lineEdit_reference->text().toInt();
+    int pourcentage= ui->lineEdit_pourcentage->text().toInt();
+    QString jour=ui->lineEdit_debut->text();
+    QString duree=ui->lineEdit_fin->text();
 
+  Promotions P(ref,pourcentage,jour,duree);
 
-  Etudiant e(id,nom,prenom,ds);
-  bool test=e.ajouter();
-  if(test)
-{ui->tabetudiant->setModel(tmpetudiant.afficher());//refresh
-QMessageBox::information(nullptr, QObject::tr("Ajouter un étudiant"),
-                  QObject::tr("Etudiant ajouté.\n"
+  bool test=P.ajouter();
+    if(test)
+    {
+      ui->tabpromotions->setModel(tmppromotions.afficher());//refresh
+        QMessageBox::information(nullptr, QObject::tr("Ajouter une promotion"),
+                  QObject::tr("Promotion ajoutée.\n"
                               "Click Cancel to exit."), QMessageBox::Cancel);
 
-}
-  else
-      QMessageBox::critical(nullptr, QObject::tr("Ajouter un étudiant"),
+    }
+    else
+        QMessageBox::critical(nullptr, QObject::tr("Ajouter une promotion"),
                   QObject::tr("Erreur !.\n"
                               "Click Cancel to exit."), QMessageBox::Cancel);
 
 
 }
 
-void MainWindow::on_pb_ajouter_2_clicked()
+
+
+void MainWindow::on_Supp_Button_clicked()
 {
-    int idc = ui->lineEdit_idc->text().toInt();
-    QString nomc= ui->lineEdit_nomc->text();
-    QString prenomc= ui->lineEdit_prenomc->text();
-    QDate dateee = ui->dateEditc -> date();
-    QString dsc=dateee.toString() ;
+int ref = ui->lineEdit_supp->text().toInt();
+bool test=tmppromotions.supprimer(ref);
 
-
-  Direc eE(idc,nomc,prenomc,dsc);
-  bool test=eE.ajouter();
-  if(test)
-{ui->tabdirec->setModel(tmpdirec.afficher());//refresh
-QMessageBox::information(nullptr, QObject::tr("Ajouter un direc"),
-                  QObject::tr("Etudiant ajouté.\n"
-                              "Click Cancel to exit."), QMessageBox::Cancel);
-
-}
-  else
-      QMessageBox::critical(nullptr, QObject::tr("Ajouter un direc "),
-                  QObject::tr("Erreur !.\n"
-                              "Click Cancel to exit."), QMessageBox::Cancel);
-
-
-}
-
-void MainWindow::on_pb_supprimer_clicked()
-{
-int id = ui->lineEdit_id_2->text().toInt();
-bool test=tmpetudiant.supprimer(id);
-if(test)
-{ui->tabetudiant->setModel(tmpetudiant.afficher());//refresh
-    QMessageBox::information(nullptr, QObject::tr("Supprimer un étudiant"),
-                QObject::tr("Etudiant supprimé.\n"
+    if(test)
+    {
+    ui->tabpromotions->setModel(tmppromotions.afficher());//refresh
+    QMessageBox::information(nullptr, QObject::tr("Supprimer une promotion"),
+                QObject::tr("promotion supprimée.\n"
                             "Click Cancel to exit."), QMessageBox::Cancel);
 
-}
-else
-    QMessageBox::critical(nullptr, QObject::tr("Supprimer un étudiant"),
-                QObject::tr("Erreur !.\n"
-                            "Click Cancel to exit."), QMessageBox::Cancel);
-
-
-}
-void MainWindow::on_pb_supprimer_2_clicked()
-{
-int id = ui->lineEdit_id_4->text().toInt();
-bool test=tmpdirec.supprimer(id);
-if(test)
-{ui->tabdirec->setModel(tmpdirec.afficher());//refresh
-    QMessageBox::information(nullptr, QObject::tr("Supprimer un direc"),
-                QObject::tr("Etudiant supprimé.\n"
-                            "Click Cancel to exit."), QMessageBox::Cancel);
-
-}
-else
-    QMessageBox::critical(nullptr, QObject::tr("Supprimer un direc"),
+    }
+    else
+        QMessageBox::critical(nullptr, QObject::tr("Supprimer une promotion"),
                 QObject::tr("Erreur !.\n"
                             "Click Cancel to exit."), QMessageBox::Cancel);
 
@@ -109,41 +79,72 @@ else
 }
 
 
+void MainWindow::on_ok_clicked()
+{
+    int ref=ui->lineEdit_reference->text().toInt();
+    int pourcentage=ui->lineEdit_pourcentage->text().toInt();
+    QString jour=ui->lineEdit_debut->text();
+    QString duree=ui->lineEdit_fin->text();
+
+    Promotions p(ref,pourcentage,jour,duree);
+
+   bool test= p.ajouter();
+   if(test)
+     {
+     QMessageBox::information(nullptr, QObject::tr("Ajouter une promotion"),
+                       QObject::tr("Promotion ajoutée.\n"
+                                   "Click Cancel to exit."), QMessageBox::Cancel);
+
+     }
+       else
+           QMessageBox::critical(nullptr, QObject::tr("Ajouter une promotion"),
+                       QObject::tr("Erreur !.\n"
+                                   "Click Cancel to exit."), QMessageBox::Cancel);
+
+   ui->lineEdit_reference->clear();
+   ui->lineEdit_pourcentage->clear();
+   ui->lineEdit_debut->clear();
+}
+
+
+
+void MainWindow::on_lineEdit_supp_2_textChanged(const QString &text)
+{
+    Promotions p;
+    ui->tabpromotions->setModel(p.rechercheAvancee(text));
+}
 
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString recherche= ui->lineEdit_recherche->text();
-    ui->tabetudiant->setModel(tmpetudiant.recherche(recherche));
-}
-
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    ui->tabetudiant->setModel(tmpetudiant.tri());
+    ui->tabpromotions->setModel(tmppromotions.tri());
 }
 
 
 
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_Modifier_clicked()
 {
+    int n=ui->Modif_ref->text().toInt();
+    int s=ui->modif_pour->text().toInt();
+    QDate dP = ui->modif_debut->date();
+    QString d=dP.toString();
+    QDate dPr = ui->modif_fin->date();
+    QString dr=dPr.toString();
+   /* QString d="1/1/2000";*/
+     Promotions P(n,s,d,dr);
+     bool test=tmppromotions.modifier(P);
+     if(test==true)
+   {
+         ui->tabpromotions->setModel(tmppromotions.afficher());//refresh
+   QMessageBox::information(nullptr, QObject::tr("modifierr une promotion"),
+                     QObject::tr("promotion modifiée.\n"
 
-        int id = ui->id_1->text().toInt();
-        QString nom= ui->lineEdit_nom_2->text();
-        QString prenom= ui->lineEdit_prenom_2->text();
-        QDate dateee = ui->dateEditc_2-> date();
-        QString dsc=dateee.toString() ;
+                                 "Click Cancel to exit."), QMessageBox::Cancel);
 
-    Etudiant E (id, nom , prenom ,dsc );
-
-
-     bool test=E.modifier(E);
-
-     if (test)
-     {
-     QMessageBox::information(nullptr, QObject::tr("modifier"),
-                       QObject::tr(" client modifié .\n"
-                                   "Click Cancel to exit."), QMessageBox::Cancel);
-    }
+   }
+     else
+         QMessageBox::critical(nullptr, QObject::tr("modifier une promotion"),
+                     QObject::tr("Erreur !.\n"
+                                 "Click Cancel to exit."), QMessageBox::Cancel);
 
 }
